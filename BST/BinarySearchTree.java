@@ -99,7 +99,11 @@ public class BinarySearchTree<T extends Comparable<T>> implements SortedCollecti
 	}
 
 	public void clear(){
+		root = null;	
 	}
+
+
+
 	public static void test(){
 		BinarySearchTree<Integer> tree = new BinarySearchTree<>();
 		System.out.println("Insert first element");
@@ -119,6 +123,9 @@ public class BinarySearchTree<T extends Comparable<T>> implements SortedCollecti
 
 		int size = tree.size();
 		System.out.println("Tree size is:" + tree.size());
+		System.out.println("Clearing");	
+		tree.clear();
+		System.out.println("Size after clear:" + tree.size());
 	}
 
 	public static void main(String[] args){
