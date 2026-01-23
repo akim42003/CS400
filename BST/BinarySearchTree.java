@@ -1,5 +1,7 @@
 //BST Implementation Project 1
 //
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class BinarySearchTree<T extends Comparable<T>> implements SortedCollection<T>{
 
@@ -51,15 +53,49 @@ public class BinarySearchTree<T extends Comparable<T>> implements SortedCollecti
 	}
 
 	public boolean contains(Comparable<T> find){
-		return false;
+
+		BinaryNode<T> curr = root;
+
+		while (curr != null){
+			if (find.compareTo(curr.getData())< 0){
+				curr = curr.getLeft(); //comparison says go left
+			}
+			else if (find.compareTo(curr.getData()) > 0){
+				curr = curr.getRight(); //alt inequality
+			}
+			else{
+				return true;
+			}
+		}
+
+		return false; //curr has reached end of tree
 	}
 
 	public int size(){
-		return 0;
+		// Easiest thing might be BFS and count
+
+		int size = sizeHelper(root);
+		
+		return size;
+	}
+
+	private int sizeHelper(BinaryNode<T> node){
+		if (node == null){
+			return 0; 
+		}
+		int count = 1 + sizeHelper(node.getLeft()) + sizeHelper(node.getRight()); //init at 1 assumes root isn't null 
+		//
+		return count;
 	}
 
 	public boolean isEmpty(){
-		return false;
+		
+		if (root != null){
+			return false;
+		}
+		else {
+			return true;
+		}
 	}
 
 	public void clear(){
@@ -73,7 +109,16 @@ public class BinarySearchTree<T extends Comparable<T>> implements SortedCollecti
 		tree.insert(10);
 		System.out.println("Tree structure (level-order):");
 		System.out.println(tree.root.toLevelOrderString());
+		
+		boolean contain_test = tree.contains(2);
+		System.out.println("Tree contains 2 test:");
+		System.out.println(contain_test);
+		
+		System.out.println("Tree empty test:");
+		System.out.println(tree.isEmpty());
 
+		int size = tree.size();
+		System.out.println("Tree size is:" + tree.size());
 	}
 
 	public static void main(String[] args){
