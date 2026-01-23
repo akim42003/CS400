@@ -104,32 +104,68 @@ public class BinarySearchTree<T extends Comparable<T>> implements SortedCollecti
 
 
 
-	public static void test(){
-		BinarySearchTree<Integer> tree = new BinarySearchTree<>();
-		System.out.println("Insert first element");
-		tree.insert(5);
-		tree.insert(6);
-		tree.insert(2);
-		tree.insert(10);
-		System.out.println("Tree structure (level-order):");
-		System.out.println(tree.root.toLevelOrderString());
-		
-		boolean contain_test = tree.contains(2);
-		System.out.println("Tree contains 2 test:");
-		System.out.println(contain_test);
-		
-		System.out.println("Tree empty test:");
-		System.out.println(tree.isEmpty());
+	public boolean intTest(){
+		boolean pass = true;
 
-		int size = tree.size();
-		System.out.println("Tree size is:" + tree.size());
-		System.out.println("Clearing");	
-		tree.clear();
-		System.out.println("Size after clear:" + tree.size());
+		//Insert elements into tree
+		this.insert((T) Integer.valueOf(5));
+		this.insert((T) Integer.valueOf(6));
+		this.insert((T) Integer.valueOf(2));
+		this.insert((T) Integer.valueOf(10));
+		
+		boolean contain_test = this.contains((T) Integer.valueOf(2));
+		pass = contain_test;
+
+		pass = !this.isEmpty();
+
+		return pass;
+
+	}
+
+	public boolean stringTest(){
+		boolean pass = true;
+
+		this.insert((T) "Alex");
+		this.insert((T) "Ben");
+		this.insert((T) "Darin");
+		this.insert((T) "Arnav");
+		this.insert((T) "Louis");
+		
+		boolean contain_test = this.contains((T) "Darin");
+		pass = contain_test;	
+		
+		pass = !this.isEmpty();
+		return pass;
+	}
+
+	public boolean clearAndNull(){
+		boolean pass = true;
+		this.clear();
+		pass = this.isEmpty();
+
+		if (!pass){
+			return false;
+		}
+
+		this.insert((T) Integer.valueOf(null));
+		return true;
+
 	}
 
 	public static void main(String[] args){
-		test();
+
+		BinarySearchTree<Integer> num_tree = new BinarySearchTree<>();
+
+		System.out.println(num_tree.intTest());
+
+		BinarySearchTree<String> string_tree = new BinarySearchTree<>();
+
+		System.out.println(string_tree.stringTest());
+
+	
+		System.out.println(num_tree.clearAndNull());
+
+
 	}
 }
 
