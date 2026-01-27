@@ -2,10 +2,8 @@
 /*
  * Alexander Kim
  * CS400 Project 1
-* 1/28/1016
+* 1/28/2026
 */
-import java.util.LinkedList;
-import java.util.Queue;
 
 public class BinarySearchTree<T extends Comparable<T>> implements SortedCollection<T> {
 	// Binary Search Tree Class for Project 1
@@ -25,36 +23,42 @@ public class BinarySearchTree<T extends Comparable<T>> implements SortedCollecti
 			throw new NullPointerException("Can't insert null");
 		}
 
-		BinaryNode<T> new_node = new BinaryNode<>(data);
+		BinaryNode<T> newEntry = new BinaryNode<>(data);
 
 		if (root == null) {
-			root = new_node;
+			// if the root is null, we just return since otherwise there
+			// would be duplicates
+			root = newEntry;
 			return;
 		}
+		insertHelper(newEntry, root);
+		// recursive helper function that searches for the right place to insert
+		// the node and sets the parent-child reference and child-parent reference
+	}
 
-		BinaryNode<T> curr = root;
+	protected void insertHelper(BinaryNode<T> newEntry, BinaryNode<T> subtree) {
+		// recursive implementation for above insert method
+		if (subtree == null) {
+			// if subtree is null we can't do anything yet
+			return;
+		}
+		int comparison = newEntry.getData().compareTo(subtree.getData());
 
-		while (curr != null) {
-			// perform iterative DFS to place curr node
-			if (data.compareTo(curr.getData()) <= 0) {
-				// compare left first, else go right
-				if (curr.getLeft() == null) {
-					curr.setLeft(new_node);
-					new_node.setUp(curr);
-					return;
-				} else {
-					curr = curr.getLeft();
-				}
+		if (comparison <= 0) {
+			// go left
+			if (subtree.getLeft() == null) {
+				subtree.setLeft(newEntry);
+				newEntry.setUp(subtree);
 			} else {
-				if (curr.getRight() == null) {
-					curr.setRight(new_node);
-					new_node.setUp(curr);
-					return;
-				} else {
-					curr = curr.getRight();
-				}
+				insertHelper(newEntry, subtree.getLeft());
 			}
-
+		} else {
+			if (subtree.getRight() == null) {
+				subtree.setRight(newEntry);
+				newEntry.setUp(subtree);
+			} else {
+				insertHelper(newEntry, subtree.getRight());
+			}
 		}
 	}
 
@@ -92,10 +96,7 @@ public class BinarySearchTree<T extends Comparable<T>> implements SortedCollecti
 			return 0;
 		}
 		int count = 1 + sizeHelper(node.getLeft()) + sizeHelper(node.getRight()); // count assumes root exists
-												// and recursively
-												// accumulates 1 through
-												// each
-		// left and right subtree
+		// and recursively accumulates 1 through each left and right subtree
 		return count;
 	}
 
@@ -129,12 +130,10 @@ public class BinarySearchTree<T extends Comparable<T>> implements SortedCollecti
 		this.insert((T) Integer.valueOf(10));
 
 		boolean contain_test = this.contains((T) Integer.valueOf(2));
-		pass = contain_test;
-
-		pass = !this.isEmpty();
+		pass = pass && contain_test;
 
 		boolean non_existent = this.contains((T) Integer.valueOf(20));
-		pass = !non_existent;
+		pass = pass && !non_existent;
 
 		return pass;
 
@@ -155,12 +154,12 @@ public class BinarySearchTree<T extends Comparable<T>> implements SortedCollecti
 		this.insert((T) "Louis");
 
 		boolean contain_test = this.contains((T) "Darin");
-		pass = contain_test;
+		pass = pass && contain_test;
 
 		boolean contain_test2 = this.contains((T) "Alex");
-		pass = contain_test2;
+		pass = pass && contain_test2;
 
-		pass = !this.isEmpty();
+		pass = pass && !this.isEmpty();
 		return pass;
 	}
 
@@ -197,7 +196,6 @@ public class BinarySearchTree<T extends Comparable<T>> implements SortedCollecti
 		this.insert((T) Integer.valueOf(10));
 
 		int size = this.size();
-
 		if (size == 8) {
 			return true;
 			// true if the function inserts duplicate
