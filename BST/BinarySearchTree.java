@@ -115,8 +115,12 @@ public class BinarySearchTree<T extends Comparable<T>> implements SortedCollecti
 		root = null;
 	}
 
-	public void leftRotate() {
-		// left
+	public void leftRotate(T data, BinaryNode<T> subtree) {
+		// left rotation
+		//
+		if (subtree == null) {
+			return;
+		}
 	}
 
 	public void rightRotate() {
