@@ -115,6 +115,22 @@ public class BinarySearchTree<T extends Comparable<T>> implements SortedCollecti
 		root = null;
 	}
 
+	public void leftRotate() {
+		// left
+	}
+
+	public void rightRotate() {
+		// right rotation
+	}
+
+	public void balanceTree() {
+		// recursively balance BST starting from root
+	}
+
+	private void balanceHelper() {
+
+	}
+
 	public boolean test1() {
 		/*
 		 * This test uses an unbalanced tree of integers and tests multiple levels
