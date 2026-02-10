@@ -137,7 +137,7 @@ public class Backend implements BackendInterface {
 		List<String> filterNames = applyAndSetFilter(filterTime);
 
 		for (GameRecord record : tree) {
-			if (Arrays.asList(filterNames).contains(record.getName())) {
+			if (filterNames.contains(record.getName())) {
 				validRecords.add(record);
 			}
 		}
