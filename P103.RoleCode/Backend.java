@@ -16,8 +16,11 @@ public class Backend implements BackendInterface {
 
 	private String filterTime;
 
-	public Backend(Tree_Placeholder tree) {
-
+	public Backend(IterableSortedCollection<GameRecord> tree) {
+		this.tree = tree;
+		this.currentLow = null;
+		this.currentHigh = null;
+		this.filterTime = null;
 	}
 
 	public void addRecord(GameRecord record) {
@@ -70,19 +73,87 @@ public class Backend implements BackendInterface {
 	}
 
 	public List<String> getAndSetRange(Integer low, Integer high) {
+		currentHigh = high;
+		currentLow = low;
 
-		return new ArrayList<>();
+		if (low != null) {
+			tree.setIteratorMin(new GameRecord("", GameRecord.Continent.AFRICA, low, 0, 0, "000:00:00"));
+		} else {
+			tree.setIteratorMin(null);
+		}
+		if (high != null) {
+			tree.setIteratorMax(new GameRecord("", GameRecord.Continent.AFRICA, high, 0, 0, "000:00:00"));
+		} else {
+			tree.setIteratorMax(null);
+		}
+
+		List<String> rangeNames = new ArrayList<>();
+		Iterator<GameRecord> tree_it = tree.iterator();
+		while (tree_it.hasNext()) {
+			GameRecord record = tree_it.next();
+			if (filterTime == null || compareTime(record.getCompletionTime(), filterTime) < 0) {
+
+				rangeNames.add(record.getName());
+			}
+		}
+
+		return rangeNames;
 	}
 
 	public List<String> applyAndSetFilter(String time) {
 
-		return new ArrayList<>();
+		List<String> filterNames = new ArrayList<>();
+		this.filterTime = time;
+
+		filterNames = getAndSetRange(currentLow, currentHigh);
+		return filterNames;
+
+	}
+
+	private int compareTime(String time, String recordTime) {
+		String[] targetTime = time.split(":");
+		int targetHours = Integer.parseInt(targetTime[0]);
+		int targetMins = Integer.parseInt(targetTime[1]);
+		int targetSecs = Integer.parseInt(targetTime[2]);
+
+		String[] recordSplit = recordTime.split(":");
+		int recordHours = Integer.parseInt(recordSplit[0]);
+		int recordMins = Integer.parseInt(recordSplit[1]);
+		int recordSecs = Integer.parseInt(recordSplit[2]);
+
+		if (targetHours != recordHours) {
+			return targetHours - recordHours;
+		} else if (targetMins != recordMins) {
+			return targetMins - recordMins;
+		}
+		return targetSecs - recordSecs;
 
 	}
 
 	public List<String> getTopTen() {
+		List<String> topTenNames = new ArrayList<>();
+		List<GameRecord> validRecords = new ArrayList<>();
 
-		return new ArrayList<>();
+		List<String> filterNames = applyAndSetFilter(filterTime);
+
+		for (GameRecord record : tree) {
+			if (Arrays.asList(filterNames).contains(record.getName())) {
+				validRecords.add(record);
+			}
+		}
+
+		for (int i = 0; i < 10 && !validRecords.isEmpty(); i++) {
+			int minIdx = 0;
+			for (int j = 1; j < validRecords.size(); j++) {
+				if (validRecords.get(j).getDamageTaken() < validRecords.get(minIdx).getDamageTaken()) {
+					minIdx = j;
+				}
+			}
+			topTenNames.add(validRecords.get(minIdx).getName());
+			validRecords.remove(minIdx);
+		}
+
+		return topTenNames;
 	}
 
 }
