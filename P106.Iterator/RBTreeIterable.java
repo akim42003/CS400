@@ -7,8 +7,10 @@
 import java.util.Iterator;
 import java.util.Stack;
 import java.util.NoSuchElementException;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * This class extends RedBlackTree into a tree that supports iterating over the
@@ -65,7 +67,7 @@ public class RBTreeIterable<T extends Comparable<T>>
 	 * value and finishes with the highest value that exists in the tree.
 	 */
 	public Iterator<T> iterator() {
-		return null;
+		return new TreeIterator(this.root, this.min, this.max);
 	}
 
 	/**
@@ -171,21 +173,115 @@ public class RBTreeIterable<T extends Comparable<T>>
 			return current.data;
 		}
 
+		/**
+		 * Tests iterator over a tree with duplicates (20) and both bounds
+		 * uses assertEquals to check both count of iterated nodes and data of nodes
+		 * uses assertFalse to check potential counter examples
+		 */
 		@Test
 		public void test1() {
+			// tests with both bounds and has a duplicate 20
 			RBTreeIterable<Integer> tree = new RBTreeIterable<>();
+			tree.insert(10);
+			tree.insert(20);
+			tree.insert(5);
+			tree.insert(15);
+			tree.insert(20);
+			tree.insert(25);
+			tree.insert(3);
 
+			tree.setIteratorMin(10);
+			tree.setIteratorMax(20);
+
+			Iterator<Integer> tree_it = tree.iterator();
+			List<Integer> results = new ArrayList<>();
+			// run iterator
+			while (tree_it.hasNext()) {
+				results.add(tree_it.next());
+			}
+
+			assertEquals(3, results.size());
+			assertEquals(10, results.get(0));
+			assertEquals(20, results.get(1));
+			assertEquals(20, results.get(2));
+
+			assertFalse(results.contains(3));
+			assertFalse(results.contains(25));
 		}
 
+		/**
+		 * tests a tree of strings with a single min bound
+		 * uses assertEquals and assertFalse method similarly to test1
+		 */
 		@Test
 		public void test2() {
 
 			RBTreeIterable<String> tree = new RBTreeIterable<>();
+			tree.insert("b");
+			tree.insert("a");
+			tree.insert("c");
+			tree.insert("d");
+			tree.insert("e");
+			tree.insert("g");
+
+			tree.setIteratorMin("c");
+
+			Iterator<String> string_it = tree.iterator();
+
+			List<String> string_res = new ArrayList<>();
+			// run iterator
+			while (string_it.hasNext()) {
+				string_res.add(string_it.next());
+			}
+
+			assertEquals(4, string_res.size());
+			assertEquals("c", string_res.get(0));
+			assertEquals("d", string_res.get(1));
+			assertEquals("e", string_res.get(2));
+			assertEquals("g", string_res.get(3));
+
+			assertFalse(string_res.contains("a"));
+
 		}
 
+		/**
+		 * tests a tree with duplicates and a high maximum such that every node is
+		 * passed through
+		 * the iterator. The end results should return every node and the size of the
+		 * tree
+		 */
 		@Test
 		public void test3() {
+			// tests to see if everything is returned in order with a high maximum bound
 			RBTreeIterable<Integer> tree = new RBTreeIterable<>();
+			tree.insert(22);
+			tree.insert(70);
+			tree.insert(2);
+			tree.insert(55);
+			tree.insert(19);
+			tree.insert(13);
+			tree.insert(19);
+			tree.insert(23);
+
+			tree.setIteratorMax(100);
+			Iterator<Integer> int_it = tree.iterator();
+
+			List<Integer> int_res = new ArrayList<>();
+
+			// run iterator
+			while (int_it.hasNext()) {
+				int_res.add(int_it.next());
+			}
+
+			assertEquals(8, int_res.size());
+			assertEquals(2, int_res.get(0));
+			assertEquals(13, int_res.get(1));
+			assertEquals(19, int_res.get(2));
+			assertEquals(19, int_res.get(3));
+			assertEquals(22, int_res.get(4));
+			assertEquals(23, int_res.get(5));
+			assertEquals(55, int_res.get(6));
+			assertEquals(70, int_res.get(7));
 		}
 	}
 
