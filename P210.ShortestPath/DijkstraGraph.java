@@ -196,6 +196,7 @@ public class DijkstraGraph<NodeType, EdgeType extends Number>
 
 	@Test
 	public void test1() {
+		// replace with graph from lecture
 		DijkstraGraph<String, Integer> graph = new DijkstraGraph<>();
 		graph.insertNode("A");
 		graph.insertNode("B");
@@ -211,6 +212,34 @@ public class DijkstraGraph<NodeType, EdgeType extends Number>
 		List<String> path = graph.shortestPathData("A", "D");
 		assertEquals(List.of("A", "B", "D"), path);
 		assertEquals(5.0, graph.shortestPathCost("A", "D"));
+	}
+
+	@Test
+	public void test2() {
+		// case where no path exists between start and end
+		DijkstraGraph<String, Integer> graph = new DijkstraGraph<>();
+
+		graph.insertNode("A");
+		graph.insertNode("B");
+
+		assertThrows(NoSuchElementException.class, () -> {
+			graph.shortestPathData("A", "B");
+		});
+
+	}
+
+	@Test
+	public void test3() {
+		// end node does not exist
+		DijkstraGraph<Integer, Integer> graph = new DijkstraGraph<>();
+
+		graph.insertNode(1);
+		graph.insertNode(2);
+
+		assertThrows(NoSuchElementException.class, () -> {
+			graph.shortestPathData(1, 3);
+		});
+
 	}
 
 }
