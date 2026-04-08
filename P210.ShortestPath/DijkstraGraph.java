@@ -97,19 +97,28 @@ public class DijkstraGraph<NodeType, EdgeType extends Number>
 	 * @throws NullPointerException   if the start or end node are null
 	 */
 	protected SearchNode computeShortestPath(Node start, Node end) {
+		// initialize priority queue and map to track visited nodes
 		PriorityQueue<SearchNode> pQueue = new PriorityQueue<>();
 		PlaceholderMap<NodeType, SearchNode> visitedNodes = new PlaceholderMap<>();
 
+		// create first search node and add to priority queue
 		SearchNode startNode = new SearchNode(start);
 		pQueue.add(startNode);
 
+		// implementation of Dijkstra's Algorithm
 		while (!pQueue.isEmpty()) {
 			SearchNode current = pQueue.remove();
+			// return if end node is reached
 			if (current.node.data == end.data) {
 				return current;
 			} else {
+				// if current node has already been visited skip
+				if (visitedNodes.containsKey(current.node.data)) {
+					continue;
+				}
 				visitedNodes.put(current.node.data, current);
 
+				// accumulate neighbors based on edges leaving
 				for (Edge edge : current.node.edgesLeaving) {
 					if (!visitedNodes.containsKey(edge.succ.data)) {
 						SearchNode unvisitedNeighbor = new SearchNode(current, edge);
@@ -143,6 +152,7 @@ public class DijkstraGraph<NodeType, EdgeType extends Number>
 	public List<NodeType> shortestPathData(NodeType start, NodeType end) {
 		List<NodeType> pathData = new ArrayList<>();
 
+		// throw exception if start or end nodes aren't in the graph
 		if (this.nodes.containsKey(start) == false) {
 			throw new NoSuchElementException();
 
@@ -154,10 +164,12 @@ public class DijkstraGraph<NodeType, EdgeType extends Number>
 		Node startNode = this.nodes.get(start);
 		Node endNode = this.nodes.get(end);
 
+		// get shortest path search node
 		SearchNode pathEnd = computeShortestPath(startNode, endNode);
 
 		SearchNode currentNode = pathEnd;
 
+		// trace through pred searchNodes in shortest path and add keys to pathData list
 		while (currentNode.pred != null) {
 			pathData.add(currentNode.node.data);
 			currentNode = currentNode.pred;
@@ -182,12 +194,14 @@ public class DijkstraGraph<NodeType, EdgeType extends Number>
 	 * @throws NullPointerException   if the start or end node are null
 	 */
 	public double shortestPathCost(NodeType start, NodeType end) {
+		// exceptions if start or end nodes aren't in the graph
 		if (this.nodes.containsKey(start) == false) {
 			throw new NoSuchElementException();
 		}
 		if (this.nodes.containsKey(end) == false) {
 			throw new NoSuchElementException();
 		}
+		// get shortest path and return cost
 		Node startNode = this.nodes.get(start);
 		Node endNode = this.nodes.get(end);
 		SearchNode pathEnd = computeShortestPath(startNode, endNode);
@@ -202,16 +216,31 @@ public class DijkstraGraph<NodeType, EdgeType extends Number>
 		graph.insertNode("B");
 		graph.insertNode("C");
 		graph.insertNode("D");
+		graph.insertNode("E");
+		graph.insertNode("F");
+		graph.insertNode("G");
+		graph.insertNode("H");
 
-		graph.insertEdge("A", "B", 2);
-		graph.insertEdge("B", "D", 3);
-		graph.insertEdge("A", "D", 10);
-		graph.insertEdge("A", "C", 5);
-		graph.insertEdge("C", "D", 1);
+		graph.insertEdge("A", "B", 4);
+		graph.insertEdge("B", "D", 1);
+		graph.insertEdge("A", "C", 2);
+		graph.insertEdge("C", "D", 5);
+		graph.insertEdge("B", "E", 10);
+		graph.insertEdge("D", "E", 3);
+		graph.insertEdge("D", "F", 0);
+		graph.insertEdge("F", "D", 2);
+		graph.insertEdge("F", "H", 4);
+		graph.insertEdge("G", "H", 4);
 
-		List<String> path = graph.shortestPathData("A", "D");
-		assertEquals(List.of("A", "B", "D"), path);
-		assertEquals(5.0, graph.shortestPathCost("A", "D"));
+		// Example path from lecture using lecture graph
+		List<String> path = graph.shortestPathData("A", "E");
+		assertEquals(List.of("A", "B", "D", "E"), path);
+		assertEquals(8, graph.shortestPathCost("A", "E"));
+
+		// path with different start and end using lecture graph
+		List<String> path2 = graph.shortestPathData("B", "F");
+		assertEquals(List.of("B", "D", "F"), path2);
+		assertEquals(1, graph.shortestPathCost("B", "F"));
 	}
 
 	@Test
