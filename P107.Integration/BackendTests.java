@@ -73,4 +73,109 @@ public class BackendTests {
 		assertEquals("v0idt3mp0", topTen.get(1));
 
 	}
+
+	/**
+	 * integration test that submits one recurd through Frontend submit command and
+	 * verifies its output
+	 * using show output from Backend
+	 */
+	@Test
+	public void integrationTest1() {
+
+		InterableSortedCollection<GameRecord> tree = new RBTreeIterable();
+		Backend backend = new Backend(tree);
+		Scanner scanner = new Scanner("unused");
+		Frontend frontend = new Frontend(scanner, backend);
+
+		frontend.processSingleCommand("submit testPlayer ASIA 50000 60 120 100:30:60");
+
+		List<String> results = backend.getAndSetRange(null, null);
+		assertTrue(results.contains("testPlayer"),
+				"record submitted via frontend should be retrieved from backend");
+
+	}
+
+	/*
+	 * Integration test that loads records from records.csv through Frontend submit
+	 * multiple and verifies
+	 * the output with Backend
+	 */
+	@Test
+	public void integrationTest2() {
+
+		IterableSortedCollection<GameRecord> tree = new RBTreeIterable();
+		Backend backend = new Backend(tree);
+
+		backend.readData("records.csv");
+
+		TextUITester tester = new TextUITester("submit multiple records.csv\nshow 100\n quit\n");
+		Scanner scanner = new Scanner(System.in);
+		Frontend frontend = new Frontend(scanner, backend);
+
+		frontend.runCommandLoop();
+
+		String output = tester.checkOutput();
+
+		assertTrue(output.contains("Records loaded from file"), "output should confirm CSV loaded");
+		assertFalse(output.contains("Error"), "errors should not occur unless CSV loaded incorrectly");
+
+	}
+	/*
+	 * integration test that loads csv and sets a score range through frontend
+	 * verifies only records in the range are shown using backend for filtering
+	 */
+
+	@Test
+	public void integrationTest3() {
+		IterableSortedCollection<GameRecord> tree = new RBTreeIterable();
+		Backend backend = new Backend(tree);
+
+		backend.readData("records.csv");
+
+		TextUITester tester = new TextUITester("score 49000 to 50000\nshow 100 \nquit \n");
+		Scanner scanner = new Scanner(System.in);
+		Frontend frontend = new Frontend(scanner, backend);
+
+		frontend.runCommandLoop();
+
+		String output = tester.checkOutput();
+
+		List<String> rangeResults = backend.getAndSetRange(49000, 50000);
+
+		for (String name : rangeResults) {
+			asertTrue(output.contains(name),
+					"all records in backend range should appear in frontend show output");
+		}
+
+	}
+
+	/**
+	 * integration test that applies a time filter and uses show least damage to
+	 * check if getTopTen returns
+	 * the correct results after filtering via backend.
+	 */
+	@Test
+	public void integrationTest4() {
+		IterableSortedCollection<GameRecord> tree = new RBTreeIterable();
+		Backend backend = new Backend(tree);
+
+		backend.readData("records.csv");
+
+		TextUITester tester = new TextUITester("score 49000 to 50000\nshow 100 \nquit \n");
+		Scanner scanner = new Scanner(System.in);
+		Frontend frontend = new Frontend(scanner, backend);
+
+		frontend.runCommandLoop();
+
+		String output = tester.checkOutput();
+
+		List<String> topTen = backend.getTopTen();
+		assertTrue(topTen.size() <= 10);
+
+		for (String name : topTen) {
+			assertTrue(output.contains(name));
+		}
+
+	}
+
 }
